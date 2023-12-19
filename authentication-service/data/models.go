@@ -18,9 +18,10 @@ type PostgresRepository struct {
 	Conn *sql.DB
 }
 
-func NewPostgresRepository(db *sql.DB) *PostgresRepository {
+func NewPostgresRepository(pool *sql.DB) *PostgresRepository {
+	db = pool
 	return &PostgresRepository{
-		Conn: db,
+		Conn: pool,
 	}
 }
 
@@ -61,7 +62,7 @@ func (u *PostgresRepository) GetAll() ([]*User, error) {
 	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at
 	from users order by last_name`
 
-	rows, err := db.QueryContext(ctx, query)
+	rows, err := u.Conn.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
